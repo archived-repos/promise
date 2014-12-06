@@ -1,6 +1,6 @@
 {
     "name": "jstool-promise",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "promise jstool example",
     "main": "promise.js",
     "scripts": {
@@ -8,7 +8,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/jstools/jstool-promise.git"
+        "url": "https://github.com/jstools/promise.js.git"
     },
     "keywords": [
         "javascript",
@@ -18,9 +18,9 @@
     "author": "Jesús Manuel Germade Castiñeiras <jesus@germade.es>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/jstools/jstool-promise/issues"
+        "url": "https://github.com/jstools/promise.js/issues"
     },
-    "homepage": "https://github.com/jstools/jstool-promise",
+    "homepage": "https://github.com/jstools/promise.js",
     "devDependencies": {
         "grunt": "^0.4.5",
         "grunt-contrib-uglify": "latest",
