@@ -1,7 +1,8 @@
 module.exports = function(config) {
-  config.set({
+  
+  var configuration = {
     frameworks: ['jasmine'],
-    plugins: [ 'karma-jasmine', 'karma-phantomjs-launcher', 'karma-chrome-launcher', 'karma-firefox-launcher' ],
+    plugins: [ 'karma-jasmine', 'karma-chrome-launcher' ],
     files: [
       'node_modules/jstool-core/core.js',
     	'promise.js',
@@ -9,5 +10,11 @@ module.exports = function(config) {
     ],
     browsers: [ 'Chrome' ],
     singleRun: true
-  });
+  };
+
+  if(process.env.TRAVIS){
+    configuration.browsers = ['Chrome_travis_ci'];
+  }
+
+  config.set(configuration);
 };
