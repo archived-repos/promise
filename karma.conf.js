@@ -9,6 +9,12 @@ module.exports = function(config) {
      	'tests/*.js'
     ],
     browsers: [ 'Chrome' ],
+    customLaunchers: {
+      Chrome_travis_ci: {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      }
+    },
     singleRun: true
   };
 
