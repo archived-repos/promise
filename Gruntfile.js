@@ -61,4 +61,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('publish', [ 'uglify:min', 'increase-version', 'git:increase-version', 'shell:npm-publish' ]);
 
+  grunt.registerTask('test', [ 'karma' ]);
+
 };
