@@ -57,11 +57,14 @@
 			module.exports = Promise;
 		}
 	} else {
-		if( typeof Promise === 'undefined' ) {
+		if( typeof window.Promise === 'undefined' ) {
 			throw 'Promise not found';
 		} else {
-			addWhen(Promise);
-			fn.define('Promise', function () { return Promise; });
+			addWhen(window.Promise);
+
+			if( typeof fn !== 'undefined' ) {
+				fn.define('Promise', function () { return Promise; });
+			}
 		}
 	}
 

@@ -49,6 +49,11 @@ module.exports = function(grunt) {
         ],
         dest: '<%= pkg.main.replace(/\.js$/, \'.min.js\') %>'
       }
+    },
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js'
+      }
     }
   });
 
