@@ -7,7 +7,7 @@ jstool-promise
 var qPromise = fn('qPromise');
 
 new qPromise(function (resolve, reject) {
-		resolve('hola caracola');
+		resolve('gogogo!');
 	})
 
     .finally(function (result) {
@@ -24,7 +24,7 @@ new qPromise(function (resolve, reject) {
         console.log('checkpoint 2', result);
         this.hold(function (resolve, reject) {
             setTimeout(function () {
-                reject('whoops');
+                reject('whoops!');
             }, 1000);
         });
     })
@@ -35,4 +35,11 @@ new qPromise(function (resolve, reject) {
 		console.log('checkpoint 3.1', reason);
 	})
 ;
+```
+output will be:
+```.sh
+checkpoint 1 gogogo!
+checkpoint 2 gogogo!
+checkpoint 3.1 whoops!
+checkpoint 4.1 whoops!
 ```
