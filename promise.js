@@ -25,47 +25,163 @@
  * 
  */
 
-(function () {
+// var qPromise = fn('qPromise');
 
-	function addWhen (Promise) {
-		if( !Promise.when ) {
-			Promise.when = function (p) {
-				p = p || {};
-	            return new Promise(function (resolve, reject) {
-	                if( p ) {
-	                    if( typeof p.then === 'function' ) {
-	                        p.then(resolve, reject);
-	                    } else {
-	                        setTimeout(function () {
-	                            resolve();
-	                        }, 0);
-	                    }
-	                } else {
-	                    setTimeout(function () {
-	                        reject();
-	                    }, 0);
-	                }
-	            });
-	        };
+// new qPromise(function (resolve, reject) {
+// 		resolve('hola caracola');
+// 	})
+
+//     .finally(function (result) {
+//     	console.log('checkpoint 4', result);
+//     }, function (reason) {
+//     	console.log('checkpoint 4.1', reason);
+//     })
+
+//     .then(function (result) {
+//     	console.log('checkpoint 1', result);
+//     })
+
+//     .then(function (result) {
+//         console.log('checkpoint 2', result);
+//         this.hold(function (resolve, reject) {
+//             setTimeout(function () {
+//                 reject('whoops');
+//             }, 1000);
+//         });
+//     })
+
+//     .then(function (result) {
+// 		console.log('checkpoint 3', result);
+// 	}, function (reason) {
+// 		console.log('checkpoint 3.1', reason);
+// 	})
+// ;
+
+(function (definition) {
+
+  if ( typeof window === 'undefined' ) {
+    if ( typeof module !== 'undefined' ) {
+      module.exports = definition();
+    }
+  } else {
+    if ( window.fn ) {
+      fn.define('qPromise', definition );
+    } else if( !window.qPromise ) {
+      window.qPromise = definition();
+    }
+  }
+
+})(function () {
+
+	function promiseState () {
+		this['[[PromiseStatus]]'] = 'pending'; // fulfilled | rejected
+		this['[[PromiseValue]]'] = undefined; // fulfilled | rejected
+	}
+
+	function processPromise (promise, handler) {
+		if( handler instanceof Function ) {
+			setTimeout(function () {
+				handler.apply(promise, [function (result) {
+					promise.resolve(result);
+				}, function (result) {
+					promise.reject(result);
+				}]);
+			}, 0);
 		}
 	}
 
-	if( typeof window === 'undefined' ) {
-		var Promise = require('promise-es6').Promise;
-		addWhen(Promise);
-		if ( typeof module !== 'undefined' ) {
-			module.exports = Promise;
-		}
-	} else {
-		if( typeof window.Promise === 'undefined' ) {
-			throw 'Promise not found';
-		} else {
-			addWhen(window.Promise);
+	function getStep(queue, action) {
+		var step = queue.shift();
 
-			if( typeof fn !== 'undefined' ) {
-				fn.define('Promise', function () { return Promise; });
+		while( queue.length && !step[action] ) {
+			step = queue.shift();
+		}
+
+		return step;
+	}
+
+	function processResult (promise, status, action, value) {
+
+		var step = getStep(promise.queue, action);
+
+		if( step ) {
+			promise['[[PromiseStatus]]'] = status;
+			if( value !== undefined ) {
+				promise['[[PromiseValue]]'] = value;
+			}
+		} else {
+			step = getStep(promise.queue.finally, action);
+			value = promise['[[PromiseValue]]'];
+		}
+
+		if( step && step[action] ) {
+
+			var newValue = step[action].call(promise, value);
+
+			switch ( promise['[[PromiseStatus]]'] ) {
+				case 'fulfilled':
+					promise.resolve( ( newValue === undefined ) ? value : newValue );
+					break;
+				case 'rejected':
+					promise.reject( ( newValue === undefined ) ? value : newValue );
+					break;
 			}
 		}
+
+		return promise;
 	}
 
-})();
+	function qPromise(handler) {
+		this.queue = [];
+		this.queue.finally = [];
+		processPromise(this, handler);
+	}
+
+	qPromise.prototype = new promiseState();
+
+	qPromise.prototype.then = function (onFulfilled, onRejected) {
+		if( onFulfilled instanceof Function ) {
+			this.queue.push({ then: onFulfilled, catch: onRejected });
+		}
+
+		return this;
+	};
+
+	qPromise.prototype.catch = function (onRejected) {
+		if( onRejected instanceof Function ) {
+			this.queue.push({ catch: onRejected });
+		}
+
+		return this;
+	};
+
+	qPromise.prototype.finally = function (onFulfilled, onRejected) {
+		if( onFulfilled instanceof Function ) {
+			this.queue.finally.push({ then: onFulfilled, catch: onRejected });
+		}
+
+		return this;
+	};
+
+	qPromise.prototype.resolve = function (value) {
+		return processResult(this, 'fulfilled', 'then', value);
+	};
+
+	qPromise.prototype.reject = function (value) {
+		return processResult(this, 'rejected', 'catch', value);
+	};
+
+	qPromise.prototype.hold = function (handler) {
+
+		this['[[PromiseStatus]]'] = 'pending';
+		this['[[PromiseValue]]'] = undefined;
+
+		processPromise(this, handler);
+	};
+
+	qPromise.defer = function () {
+		return new qPromise();
+	}
+
+	return qPromise;
+});
