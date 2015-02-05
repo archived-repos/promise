@@ -25,38 +25,6 @@
  * 
  */
 
-// var qPromise = fn('qPromise');
-
-// new qPromise(function (resolve, reject) {
-// 		resolve('hola caracola');
-// 	})
-
-//     .finally(function (result) {
-//     	console.log('checkpoint 4', result);
-//     }, function (reason) {
-//     	console.log('checkpoint 4.1', reason);
-//     })
-
-//     .then(function (result) {
-//     	console.log('checkpoint 1', result);
-//     })
-
-//     .then(function (result) {
-//         console.log('checkpoint 2', result);
-//         this.hold(function (resolve, reject) {
-//             setTimeout(function () {
-//                 reject('whoops');
-//             }, 1000);
-//         });
-//     })
-
-//     .then(function (result) {
-// 		console.log('checkpoint 3', result);
-// 	}, function (reason) {
-// 		console.log('checkpoint 3.1', reason);
-// 	})
-// ;
-
 (function (definition) {
 
   if ( typeof window === 'undefined' ) {
@@ -72,11 +40,6 @@
   }
 
 })(function () {
-
-	function promiseState () {
-		this['[[PromiseStatus]]'] = 'pending'; // fulfilled | rejected
-		this['[[PromiseValue]]'] = undefined; // fulfilled | rejected
-	}
 
 	function processPromise (promise, handler) {
 		if( handler instanceof Function ) {
@@ -131,15 +94,24 @@
 		return promise;
 	}
 
-	function qPromise(handler) {
+	function Promise(handler) {
+
+		/*jshint validthis: true */
+		if( this === undefined || this === window ) {
+			return new Promise(handler);
+		}
+
 		this.queue = [];
 		this.queue.finally = [];
+
+		/*jshint validthis: true */
+		this['[[PromiseStatus]]'] = 'pending'; // fulfilled | rejected
+		this['[[PromiseValue]]'] = undefined; // fulfilled | rejected
+
 		processPromise(this, handler);
 	}
 
-	qPromise.prototype = new promiseState();
-
-	qPromise.prototype.then = function (onFulfilled, onRejected) {
+	Promise.prototype.then = function (onFulfilled, onRejected) {
 		if( onFulfilled instanceof Function ) {
 			this.queue.push({ then: onFulfilled, catch: onRejected });
 		}
@@ -147,7 +119,7 @@
 		return this;
 	};
 
-	qPromise.prototype.catch = function (onRejected) {
+	Promise.prototype.catch = function (onRejected) {
 		if( onRejected instanceof Function ) {
 			this.queue.push({ catch: onRejected });
 		}
@@ -155,7 +127,7 @@
 		return this;
 	};
 
-	qPromise.prototype.finally = function (onFulfilled, onRejected) {
+	Promise.prototype.finally = function (onFulfilled, onRejected) {
 		if( onFulfilled instanceof Function ) {
 			this.queue.finally.push({ then: onFulfilled, catch: onRejected });
 		}
@@ -163,15 +135,15 @@
 		return this;
 	};
 
-	qPromise.prototype.resolve = function (value) {
+	Promise.prototype.resolve = function (value) {
 		return processResult(this, 'fulfilled', 'then', value);
 	};
 
-	qPromise.prototype.reject = function (value) {
+	Promise.prototype.reject = function (value) {
 		return processResult(this, 'rejected', 'catch', value);
 	};
 
-	qPromise.prototype.hold = function (handler) {
+	Promise.prototype.hold = function (handler) {
 
 		this['[[PromiseStatus]]'] = 'pending';
 		this['[[PromiseValue]]'] = undefined;
@@ -179,9 +151,22 @@
 		processPromise(this, handler);
 	};
 
-	qPromise.defer = function () {
-		return new qPromise();
-	}
+	Promise.defer = function () {
+		var deferred = new Promise();
+		deferred.promise = deferred;
+		return deferred;
+	};
 
-	return qPromise;
+	Promise.when = function (promise) {
+		var whenPromise = new Promise(function (resolve, reject) {
+			if( promise && promise.then ) {
+				promise.then(resolve, reject);
+			} else {
+				resolve(whenPromise, promise);
+			}
+		});
+		return whenPromise;
+	};
+
+	return Promise;
 });
