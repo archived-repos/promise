@@ -79,16 +79,35 @@
 
 		if( step && step[action] ) {
 
-			var newValue = step[action].call(promise, value);
-
-			switch ( promise['[[PromiseStatus]]'] ) {
-				case 'fulfilled':
-					promise.resolve( ( newValue === undefined ) ? value : newValue );
-					break;
-				case 'rejected':
-					promise.reject( ( newValue === undefined ) ? value : newValue );
-					break;
+			try {
+				var newValue = step[action].call(promise, value);
+			} catch(err) {
+				promise['[[PromiseStatus]]'] = 'rejected';
+				promise['[[PromiseValue]]'] = err;
+				value = err;
 			}
+
+			if( newValue && newValue.then instanceof Function ) {
+
+				newValue.then(function (result) {
+					promise.resolve( result );
+					return result;
+				}, function (reason) {
+					promise.reject( reason );
+					throw reason;
+				});
+
+			} else {
+				switch ( promise['[[PromiseStatus]]'] ) {
+					case 'fulfilled':
+						promise.resolve( ( newValue === undefined ) ? value : newValue );
+						break;
+					case 'rejected':
+						promise.reject( ( newValue === undefined ) ? value : newValue );
+						break;
+				}
+			}
+
 		}
 
 		return promise;
@@ -141,14 +160,6 @@
 
 	Promise.prototype.reject = function (value) {
 		return processResult(this, 'rejected', 'catch', value);
-	};
-
-	Promise.prototype.hold = function (handler) {
-
-		this['[[PromiseStatus]]'] = 'pending';
-		this['[[PromiseValue]]'] = undefined;
-
-		processPromise(this, handler);
 	};
 
 	Promise.defer = function () {
