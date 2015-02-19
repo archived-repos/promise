@@ -41,8 +41,6 @@
 
 })(function (root) {
 
-	console.log('root', root);
-
 	function processPromise (promise, handler) {
 		if( handler instanceof Function ) {
 			setTimeout(function () {
