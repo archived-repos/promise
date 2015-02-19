@@ -33,13 +33,15 @@
     }
   } else {
     if ( root.fn ) {
-      fn.define('qPromise', (function () { return definition(root); })() );
+      fn.define('qPromise', function () { return definition(root); } );
     } else if( !root.qPromise ) {
       root.qPromise = definition(root);
     }
   }
 
 })(function (root) {
+
+	console.log('root', root);
 
 	function processPromise (promise, handler) {
 		if( handler instanceof Function ) {
@@ -195,4 +197,5 @@
 	};
 
 	return P;
+
 }, this);
