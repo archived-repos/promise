@@ -1,6 +1,6 @@
 {
     "name": "jstool-promise",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "description": "promise jstool example",
     "main": "promise.js",
     "scripts": {
@@ -29,14 +29,10 @@
         "grunt-shell": "latest",
         "jasmine": "^2.1.1",
         "jasmine-core": "^2.1.3",
-        "jstool-core": "^0.1.14",
         "karma": "^0.12.28",
         "karma-chrome-launcher": "^0.1.7",
         "karma-jasmine": "^0.3.2",
         "load-grunt-tasks": "latest",
         "time-grunt": "latest"
-    },
-    "dependencies": {
-        "promise-es6": "^0.1.0"
     }
 }

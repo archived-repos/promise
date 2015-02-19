@@ -4,7 +4,6 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     plugins: [ 'karma-jasmine', 'karma-chrome-launcher' ],
     files: [
-      'node_modules/jstool-core/core.js',
     	'promise.js',
      	'tests/*.js'
     ],

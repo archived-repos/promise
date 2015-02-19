@@ -25,21 +25,21 @@
  * 
  */
 
-(function (definition) {
+(function (definition, root) {
 
   if ( typeof window === 'undefined' ) {
     if ( typeof module !== 'undefined' ) {
       module.exports = definition();
     }
   } else {
-    if ( window.fn ) {
-      fn.define('qPromise', definition );
-    } else if( !window.qPromise ) {
-      window.qPromise = definition();
+    if ( root.fn ) {
+      fn.define('qPromise', (function () { return definition(root); })() );
+    } else if( !root.qPromise ) {
+      root.qPromise = definition(root);
     }
   }
 
-})(function () {
+})(function (root) {
 
 	function processPromise (promise, handler) {
 		if( handler instanceof Function ) {
@@ -56,11 +56,14 @@
 	function getStep(queue, action) {
 		var step = queue.shift();
 
-		while( queue.length && !step[action] ) {
+		while( queue.length ) {
+			if( step[action] ) {
+				return step;
+			}
 			step = queue.shift();
 		}
 
-		return step;
+		return (step && step[action]) ? step : false;
 	}
 
 	function processResult (promise, status, action, value) {
@@ -73,18 +76,25 @@
 				promise['[[PromiseValue]]'] = value;
 			}
 		} else {
-			step = getStep(promise.queue.finally, action);
-			value = promise['[[PromiseValue]]'];
+			step = promise.queue.finally.shift();
+
+			while( step ) {
+				step(value);
+				step = getStep(promise.queue.finally, action);
+			}
+
+			step = false;
 		}
 
 		if( step && step[action] ) {
 
 			try {
 				var newValue = step[action].call(promise, value);
+				promise['[[PromiseStatus]]'] = 'fulfilled';
 			} catch(err) {
 				promise['[[PromiseStatus]]'] = 'rejected';
 				promise['[[PromiseValue]]'] = err;
-				value = err;
+				newValue = err;
 			}
 
 			if( newValue && newValue.then instanceof Function ) {
@@ -98,6 +108,7 @@
 				});
 
 			} else {
+				
 				switch ( promise['[[PromiseStatus]]'] ) {
 					case 'fulfilled':
 						promise.resolve( ( newValue === undefined ) ? value : newValue );
@@ -113,24 +124,28 @@
 		return promise;
 	}
 
-	function Promise(handler) {
+	function initPromise(promise, handler) {
+		promise.queue = [];
+		promise.queue.finally = [];
 
 		/*jshint validthis: true */
-		if( this === undefined || this === window ) {
-			return new Promise(handler);
-		}
+		promise['[[PromiseStatus]]'] = 'pending';
+		promise['[[PromiseValue]]'] = undefined;
 
-		this.queue = [];
-		this.queue.finally = [];
-
-		/*jshint validthis: true */
-		this['[[PromiseStatus]]'] = 'pending'; // fulfilled | rejected
-		this['[[PromiseValue]]'] = undefined; // fulfilled | rejected
-
-		processPromise(this, handler);
+		processPromise(promise, handler);
 	}
 
-	Promise.prototype.then = function (onFulfilled, onRejected) {
+	function P(handler) {
+
+		/*jshint validthis: true */
+		if( this === undefined || this === root ) {
+			return new P(handler);
+		} else {
+			initPromise(this, handler);
+		}
+	}
+
+	P.prototype.then = function (onFulfilled, onRejected) {
 		if( onFulfilled instanceof Function ) {
 			this.queue.push({ then: onFulfilled, catch: onRejected });
 		}
@@ -138,7 +153,7 @@
 		return this;
 	};
 
-	Promise.prototype.catch = function (onRejected) {
+	P.prototype.catch = function (onRejected) {
 		if( onRejected instanceof Function ) {
 			this.queue.push({ catch: onRejected });
 		}
@@ -146,30 +161,30 @@
 		return this;
 	};
 
-	Promise.prototype.finally = function (onFulfilled, onRejected) {
+	P.prototype.finally = function (onFulfilled) {
 		if( onFulfilled instanceof Function ) {
-			this.queue.finally.push({ then: onFulfilled, catch: onRejected });
+			this.queue.finally.push(onFulfilled);
 		}
 
 		return this;
 	};
 
-	Promise.prototype.resolve = function (value) {
+	P.prototype.resolve = function (value) {
 		return processResult(this, 'fulfilled', 'then', value);
 	};
 
-	Promise.prototype.reject = function (value) {
+	P.prototype.reject = function (value) {
 		return processResult(this, 'rejected', 'catch', value);
 	};
 
-	Promise.defer = function () {
-		var deferred = new Promise();
+	P.defer = function () {
+		var deferred = new P();
 		deferred.promise = deferred;
 		return deferred;
 	};
 
-	Promise.when = function (promise) {
-		var whenPromise = new Promise(function (resolve, reject) {
+	P.when = function (promise) {
+		var whenPromise = new P(function (resolve, reject) {
 			if( promise && promise.then ) {
 				promise.then(resolve, reject);
 			} else {
@@ -179,5 +194,5 @@
 		return whenPromise;
 	};
 
-	return Promise;
-});
+	return P;
+}, this);
