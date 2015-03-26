@@ -41,6 +41,8 @@
 
 })(function (root) {
 
+	function noop () {}
+
 	function processPromise (promise, handler) {
 		if( handler instanceof Function ) {
 			setTimeout(function () {
@@ -146,9 +148,10 @@
 	}
 
 	P.prototype.then = function (onFulfilled, onRejected) {
-		if( onFulfilled instanceof Function ) {
-			this.queue.push({ then: onFulfilled, catch: onRejected });
-		}
+		this.queue.push({
+			then: ( onFulfilled instanceof Function ) ? onFulfilled : false,
+			catch: ( onRejected instanceof Function ) ? onRejected : false
+		});
 
 		return this;
 	};
@@ -192,6 +195,44 @@
 			}
 		});
 		return whenPromise;
+	};
+
+	P.all = function (promisesList) {
+
+		promisesList = ( promisesList instanceof Array ) ? promisesList : [];
+
+		return new P(function (resolve, reject) {
+
+			if( !promisesList.length ) {
+				resolve();
+				return;
+			}
+
+			var pending = 0, promisesResult = [];
+
+			promisesResult.length = promisesList.length;
+
+			promisesList.forEach(function (promise, index) {
+				if( promise instanceof Object && promise.then ) {
+					pending++;
+
+					promise.then(function (result) {
+						console.log('resolved promise', index);
+
+						promisesResult[index] = result;
+
+						pending--;
+						if( !pending ) {
+							resolve(promisesResult);
+						}
+
+					}, reject);
+				} else {
+					throw { promise: promise, error: 'is not a promise' };
+				}
+			});		
+		});
+
 	};
 
 	return P;

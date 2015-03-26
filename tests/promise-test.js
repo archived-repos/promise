@@ -200,4 +200,62 @@ describe('promise test', function () {
 		
     });
 
+    it("resolved all", function(done) {
+
+		var result = false;
+
+		qPromise.all([
+			qPromise(function (resolve, reject) {
+				setTimeout(function () {
+					resolve('foo');
+				}, 1);
+			}),
+			qPromise(function (resolve, reject) {
+				setTimeout(function () {
+					resolve('bar');
+				}, 1);
+			})
+		])
+			.then(function (results) {
+				console.log('results', results);
+				result = 'ok ' + results.join('.');
+			}).catch(function (results) {
+				result = 'whoops ' + results.join('.');
+			});
+
+		setTimeout(function() {
+			expect(result).toBe('ok foo.bar');
+			done();
+		}, 10);
+    });
+
+    it("rejected all", function(done) {
+
+		var result = false;
+
+		qPromise.all([
+			qPromise(function (resolve, reject) {
+				setTimeout(function () {
+					resolve('foo');
+				}, 1);
+			}),
+			qPromise(function (resolve, reject) {
+				setTimeout(function () {
+					reject('bar');
+				}, 1);
+			})
+		])
+			.then(function (results) {
+				console.log('results', results);
+				result = 'ok ' + results.join('.');
+			}).catch(function (reason) {
+				result = 'whoops ' + reason;
+			});
+
+		setTimeout(function() {
+			expect(result).toBe('whoops bar');
+			done();
+		}, 10);
+    });
+
 });
