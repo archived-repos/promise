@@ -41,8 +41,6 @@
 
 })(function (root) {
 
-	function noop () {}
-
 	function processPromise (promise, handler) {
 		if( handler instanceof Function ) {
 			setTimeout(function () {
@@ -77,6 +75,9 @@
 			if( value !== undefined ) {
 				promise['[[PromiseValue]]'] = value;
 			}
+			promise['[[caught]]'] = true;
+		} else if( promise['[[PromiseStatus]]'] = 'rejected' && !promise['[[caught]]'] ) {
+			throw 'unhandled promise';
 		} else {
 			step = promise.queue.finally.shift();
 
@@ -97,6 +98,7 @@
 				promise['[[PromiseStatus]]'] = 'rejected';
 				promise['[[PromiseValue]]'] = err;
 				newValue = err;
+				promise['[[caught]]'] = false;
 			}
 
 			if( newValue && newValue.then instanceof Function ) {
