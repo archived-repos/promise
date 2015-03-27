@@ -1,6 +1,6 @@
 {
     "name": "jstool-promise",
-    "version": "0.0.20",
+    "version": "0.0.21",
     "description": "promise jstool example",
     "main": "promise.js",
     "scripts": {
