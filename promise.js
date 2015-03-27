@@ -77,7 +77,7 @@
 			}
 			promise['[[caught]]'] = true;
 		} else if( promise['[[PromiseStatus]]'] = 'rejected' && !promise['[[caught]]'] ) {
-			throw 'unhandled promise';
+			throw new Error('unhandled promise');
 		} else {
 			step = promise.queue.finally.shift();
 
