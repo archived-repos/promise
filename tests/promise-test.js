@@ -137,7 +137,7 @@ describe('promise test', function () {
 			expect(result).toBe('ok :)');
 			done();
 		}, 10);
-		
+
     });
 
     it("testing interception resolve returning promise", function(done) {
@@ -164,7 +164,7 @@ describe('promise test', function () {
 			expect(result).toBe('ok :)');
 			done();
 		}, 10 );
-		
+
     });
 
     it("testing finally", function(done) {
@@ -197,65 +197,64 @@ describe('promise test', function () {
 			expect(result).toBe('finally ok ;)');
 			done();
 		}, 10);
-		
+
     });
 
     it("resolved all", function(done) {
 
-		var result = false;
+			var result = false;
 
-		qPromise.all([
-			qPromise(function (resolve, reject) {
-				setTimeout(function () {
-					resolve('foo');
-				}, 1);
-			}),
-			qPromise(function (resolve, reject) {
-				setTimeout(function () {
-					resolve('bar');
-				}, 1);
-			})
-		])
-			.then(function (results) {
-				console.log('results', results);
-				result = 'ok ' + results.join('.');
-			}).catch(function (results) {
-				result = 'whoops ' + results.join('.');
-			});
+			qPromise.all([
+				qPromise(function (resolve, reject) {
+					setTimeout(function () {
+						resolve('foo');
+					}, 1);
+				}),
+				qPromise(function (resolve, reject) {
+					setTimeout(function () {
+						resolve('bar');
+					}, 1);
+				})
+			])
+				.then(function (results) {
+					result = 'ok ' + results.join('.');
+				}).catch(function (results) {
+					result = 'whoops ' + results.join('.');
+				});
 
-		setTimeout(function() {
-			expect(result).toBe('ok foo.bar');
-			done();
-		}, 10);
+			setTimeout(function() {
+				expect(result).toBe('ok foo.bar');
+				done();
+			}, 10);
     });
 
     it("rejected all", function(done) {
 
-		var result = false;
+			var result = false;
 
-		qPromise.all([
-			qPromise(function (resolve, reject) {
-				setTimeout(function () {
-					resolve('foo');
-				}, 1);
-			}),
-			qPromise(function (resolve, reject) {
-				setTimeout(function () {
-					reject('bar');
-				}, 1);
-			})
-		])
-			.then(function (results) {
-				console.log('results', results);
-				result = 'ok ' + results.join('.');
-			}).catch(function (reason) {
-				result = 'whoops ' + reason;
-			});
+			qPromise.all([
+				qPromise(function (resolve, reject) {
+					setTimeout(function () {
+						resolve('foo');
+					}, 1);
+				}),
+				qPromise(function (resolve, reject) {
+					setTimeout(function () {
+						reject('bar');
+					}, 1);
+				})
+			])
+				.then(function (results) {
+					console.log('results', results);
+					result = 'ok ' + results.join('.');
+				}).catch(function (reason) {
+					result = 'whoops ' + reason;
+				});
 
-		setTimeout(function() {
-			expect(result).toBe('whoops bar');
-			done();
-		}, 10);
+			setTimeout(function() {
+				expect(result).toBe('whoops bar');
+				done();
+			}, 10);
     });
 
 });

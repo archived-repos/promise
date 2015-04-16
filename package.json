@@ -3,10 +3,6 @@
     "version": "0.0.22",
     "description": "promise jstool example",
     "main": "promise.js",
-    "scripts": {
-        "test": "grunt test",
-        "posttest": "grunt uglify:min"
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/jstools/promise.js.git"
@@ -35,5 +31,9 @@
         "karma-jasmine": "^0.3.2",
         "load-grunt-tasks": "latest",
         "time-grunt": "latest"
+    },
+    "scripts": {
+        "test": "grunt test",
+        "posttest": "grunt uglify:min"
     }
 }
