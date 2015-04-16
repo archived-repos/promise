@@ -91,8 +91,10 @@
 
 		if( step && step[action] ) {
 
+      var newValue;
+
 			try {
-				var newValue = step[action].call(promise, value);
+				newValue = step[action].call(promise, value);
 				promise['[[PromiseStatus]]'] = 'fulfilled';
 			} catch(err) {
 				promise['[[PromiseStatus]]'] = 'rejected';
@@ -115,10 +117,10 @@
 
 				switch ( promise['[[PromiseStatus]]'] ) {
 					case 'fulfilled':
-						promise.resolve( ( newValue === undefined ) ? value : newValue );
+						promise.resolve( newValue === undefined ? value : newValue );
 						break;
 					case 'rejected':
-						promise.reject( ( newValue === undefined ) ? value : newValue );
+						promise.reject( newValue === undefined ? value : newValue );
 						break;
 				}
 			}
@@ -213,7 +215,7 @@
 			var pending = {}, promisesResult = [];
 
       for( var i = 0, len = promisesList.length; i < len; i++ ) {
-        pending[i] = true;
+        pending[i] = promisesList[i];
       }
 
 			promisesResult.length = promisesList.length;
