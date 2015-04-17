@@ -66,24 +66,29 @@
 		return (step && step[action]) ? step : false;
 	}
 
-	function processResult (promise, status, action, value) {
+	var actionByStatus = {
+		fulfilled: 'then',
+		rejected: 'catch'
+	};
 
-		var step = getStep(promise.queue, action);
+	function processResult (promise, status, value) {
+
+		var action = actionByStatus[ status ],
+			step = getStep(promise.queue, action);
 
 		if( step ) {
 			promise['[[PromiseStatus]]'] = status;
 			if( value !== undefined ) {
 				promise['[[PromiseValue]]'] = value;
 			}
-			promise['[[caught]]'] = true;
-		} else if( promise['[[PromiseStatus]]'] = 'rejected' && !promise['[[caught]]'] ) {
+		} else if( promise['[[PromiseStatus]]'] === 'rejected' ) {
 			throw new Error('unhandled promise');
 		} else {
 			step = promise.queue.finally.shift();
 
 			while( step ) {
 				step(value);
-				step = getStep(promise.queue.finally, action);
+				step = promise.queue.finally.shift();
 			}
 
 			step = false;
@@ -91,16 +96,13 @@
 
 		if( step && step[action] ) {
 
-      var newValue;
-
 			try {
-				newValue = step[action].call(promise, value);
+				var newValue = step[action].call(promise, value);
 				promise['[[PromiseStatus]]'] = 'fulfilled';
 			} catch(err) {
 				promise['[[PromiseStatus]]'] = 'rejected';
 				promise['[[PromiseValue]]'] = err;
 				newValue = err;
-				promise['[[caught]]'] = false;
 			}
 
 			if( newValue && newValue.then instanceof Function ) {
@@ -117,10 +119,10 @@
 
 				switch ( promise['[[PromiseStatus]]'] ) {
 					case 'fulfilled':
-						promise.resolve( newValue === undefined ? value : newValue );
+						promise.resolve( ( newValue === undefined ) ? value : newValue );
 						break;
 					case 'rejected':
-						promise.reject( newValue === undefined ? value : newValue );
+						promise.reject( ( newValue === undefined ) ? value : newValue );
 						break;
 				}
 			}
@@ -161,9 +163,7 @@
 	};
 
 	P.prototype.catch = function (onRejected) {
-		if( onRejected instanceof Function ) {
-			this.queue.push({ catch: onRejected });
-		}
+		this.then(undefined, onRejected);
 
 		return this;
 	};
@@ -177,11 +177,11 @@
 	};
 
 	P.prototype.resolve = function (value) {
-		return processResult(this, 'fulfilled', 'then', value);
+		return processResult(this, 'fulfilled', value);
 	};
 
 	P.prototype.reject = function (value) {
-		return processResult(this, 'rejected', 'catch', value);
+		return processResult(this, 'rejected', value);
 	};
 
 	P.defer = function () {
@@ -205,34 +205,40 @@
 
 		promisesList = ( promisesList instanceof Array ) ? promisesList : [];
 
+    var pending = promisesList.length, promisesResult = [];
+    promisesResult.length = promisesList.length;
+
 		return new P(function (resolve, reject) {
 
-			if( !promisesList.length ) {
-				resolve();
+			if( !pending ) {
+				resolve([]);
 				return;
 			}
-
-			var pending = {}, promisesResult = [];
-
-      for( var i = 0, len = promisesList.length; i < len; i++ ) {
-        pending[i] = promisesList[i];
-      }
-
-			promisesResult.length = promisesList.length;
 
 			promisesList.forEach(function (promise, index) {
 				if( promise instanceof Object && promise.then ) {
 
-					promise.then(function (result) {
+          if( promise['[[PromiseStatus]]'] === 'fulfilled' ) {
+            promisesResult[index] = promise['[[PromiseValue]]'];
+            pending--;
 
-						promisesResult[index] = result;
-            delete pending[index];
+            if( !pending ) {
+                resolve(promisesResult);
+            }
+      		} else if( promise['[[PromiseStatus]]'] === 'reject' ) {
+            reject(promise['[[PromiseValue]]']);
+      		} else {
+  					promise.then(function (result) {
 
-						if( !Object.keys(pending).length ) {
-              resolve(promisesResult);
-						}
+  						promisesResult[index] = result;
+              pending--;
 
-					}, reject);
+  						if( !pending ) {
+              		resolve(promisesResult);
+  						}
+
+  					}, reject);
+          }
 
 				} else {
 					throw { promise: promise, error: 'is not a promise' };
