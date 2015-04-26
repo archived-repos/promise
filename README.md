@@ -1,7 +1,8 @@
 jstool-promise
 ==============
 
-[![npm version](https://badge.fury.io/js/jstool-promise.svg)](http://badge.fury.io/js/jstool-promise) [![Build Status](https://travis-ci.org/jstools/promise.js.svg?branch=master)](https://travis-ci.org/jstools/promise.js)
+[![npm version](https://badge.fury.io/js/jn-promise.svg)](http://badge.fury.io/js/jn-promise)
+[![Build Status](https://travis-ci.org/jstools/jn-promise.svg?branch=master)](https://travis-ci.org/jstools/jn-promise)
 
 ```.js
 new qPromise(function (resolve, reject) {
