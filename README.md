@@ -1,8 +1,16 @@
-jstool-promise
-==============
+jsTools: Promise
+================
+[![Bower version](https://badge.fury.io/bo/jstools-promise.svg)](http://badge.fury.io/bo/jstools-promise)
+[![npm version](https://badge.fury.io/js/jstools-promise.svg)](http://badge.fury.io/js/jstools-promise)
+[![Build Status](https://travis-ci.org/jstools/promise.svg?branch=master)](https://travis-ci.org/jstools/promise)
 
-[![npm version](https://badge.fury.io/js/jn-promise.svg)](http://badge.fury.io/js/jn-promise)
-[![Build Status](https://travis-ci.org/jstools/jn-promise.svg?branch=master)](https://travis-ci.org/jstools/jn-promise)
+```.sh
+npm install jstools-promise --save
+```
+or
+```.sh
+bower install jstools-promise --save
+```
 
 ```.js
 new qPromise(function (resolve, reject) {
