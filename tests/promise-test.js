@@ -1,12 +1,12 @@
 describe('promise test', function () {
 
-	// var qPromise = fn('qPromise');
+	// var $promise = fn('$promise');
 
 	it("testing resolution", function(done) {
 
 		var result = false;
 
-		qPromise(function (resolve, reject) {
+		$promise(function (resolve, reject) {
 			resolve('gogogo!');
 		})
 
@@ -26,7 +26,7 @@ describe('promise test', function () {
 
 		var result = false;
 
-		qPromise(function (resolve, reject) {
+		$promise(function (resolve, reject) {
 			reject('foobar');
 		})
 
@@ -46,7 +46,7 @@ describe('promise test', function () {
 
 		var result = false;
 
-		qPromise(function (resolve, reject) {
+		$promise(function (resolve, reject) {
 			resolve('foobar');
 		})
 
@@ -70,7 +70,7 @@ describe('promise test', function () {
 
 		var result = false;
 
-		qPromise(function (resolve, reject) {
+		$promise(function (resolve, reject) {
 			resolve('foobar');
 		})
 
@@ -95,7 +95,7 @@ describe('promise test', function () {
 
 		var result = false;
 
-		qPromise(function (resolve, reject) {
+		$promise(function (resolve, reject) {
 			reject('foobar');
 		})
 
@@ -119,7 +119,7 @@ describe('promise test', function () {
 
 		var result = false;
 
-		qPromise(function (resolve, reject) {
+		$promise(function (resolve, reject) {
 			reject('foobar');
 		})
 
@@ -144,12 +144,12 @@ describe('promise test', function () {
 
 		var result = false;
 
-		qPromise(function (resolve, reject) {
+		$promise(function (resolve, reject) {
 			reject('foobar');
 		})
 
 		.catch(function (value) {
-			return qPromise(function (resolve, reject) {
+			return $promise(function (resolve, reject) {
 				resolve(':)');
 			});
 		})
@@ -171,7 +171,7 @@ describe('promise test', function () {
 
 		var result = false;
 
-		var promise = qPromise(function (resolve, reject) {
+		var promise = $promise(function (resolve, reject) {
 			reject('foobar');
 		})
 
@@ -204,13 +204,13 @@ describe('promise test', function () {
 
 			var result = false;
 
-			qPromise.all([
-				qPromise(function (resolve, reject) {
+			$promise.all([
+				$promise(function (resolve, reject) {
 					setTimeout(function () {
 						resolve('foo');
 					}, 1);
 				}),
-				qPromise(function (resolve, reject) {
+				$promise(function (resolve, reject) {
 					setTimeout(function () {
 						resolve('bar');
 					}, 1);
@@ -232,13 +232,13 @@ describe('promise test', function () {
 
 			var result = false;
 
-			qPromise.all([
-				qPromise(function (resolve, reject) {
+			$promise.all([
+				$promise(function (resolve, reject) {
 					setTimeout(function () {
 						resolve('foo');
 					}, 1);
 				}),
-				qPromise(function (resolve, reject) {
+				$promise(function (resolve, reject) {
 					setTimeout(function () {
 						reject('bar');
 					}, 1);

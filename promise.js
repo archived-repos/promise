@@ -25,21 +25,35 @@
  *
  */
 
-(function (definition, root) {
+(function (root, factory) {
 
   if ( typeof window === 'undefined' ) {
     if ( typeof module !== 'undefined' ) {
-      module.exports = definition();
+      module.exports = factory();
     }
   } else {
     if ( root.fn ) {
-      fn.define('qPromise', function () { return definition(root); } );
-    } else if( !root.qPromise ) {
-      root.qPromise = definition(root);
+      fn.define('$promise', function () { return factory(root); } );
+    } else if ( root.angular ) {
+        var $promise = factory(root);
+        angular.module('jstools.promise', [])
+          .provider(function () {
+            this.config = function (configFn) {
+              configFn.call(null, $promise);
+            };
+
+            this.$get = function () {
+              return $promise;
+            };
+          });
+    } else if( !root.$promise ) {
+      root.$promise = factory(root);
     }
   }
 
-})(function (root) {
+
+
+})(this, function (root) {
 
 	function processPromise (promise, handler) {
 		if( handler instanceof Function ) {
@@ -250,4 +264,4 @@
 
 	return P;
 
-}, this);
+});

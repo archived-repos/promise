@@ -1,17 +1,19 @@
-jsTools: Promise
+jEngine: $promise
 ================
 [![Bower version](https://badge.fury.io/bo/jstools-promise.svg)](http://badge.fury.io/bo/jstools-promise)
 [![npm version](https://badge.fury.io/js/jstools-promise.svg)](http://badge.fury.io/js/jstools-promise)
 [![Build Status](https://travis-ci.org/jstools/promise.svg?branch=master)](https://travis-ci.org/jstools/promise)
-
+Installation
+------------
 ```.sh
 npm install jstools-promise --save
 ```
-or
+  or
 ```.sh
 bower install jstools-promise --save
 ```
-
+Usage
+-----
 ```.js
 new qPromise(function (resolve, reject) {
         resolve('gogogo!');
@@ -44,7 +46,7 @@ new qPromise(function (resolve, reject) {
     })
 ;
 ```
-output will be:
+output:
 ```.sh
 checkpoint 1 gogogo!
 checkpoint 2.1 whoops!
