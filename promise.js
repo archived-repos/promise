@@ -27,16 +27,14 @@
 
 (function (root, factory) {
 
-  if ( typeof window === 'undefined' ) {
-    if ( typeof module !== 'undefined' ) {
-      module.exports = factory();
-    }
+  if ( typeof module !== 'undefined' ) {
+    module.exports = factory();
   } else {
-    if ( root.fn ) {
-      fn.define('$promise', function () { return factory(root); } );
+    if ( root.define ) {
+      root.define('$promise', function () { return factory(root); } );
     } else if ( root.angular ) {
         var $promise = factory(root);
-        angular.module('jstools.promise', [])
+        root.angular.module('jstools.promise', [])
           .provider('$promise', function () {
             this.config = function (configFn) {
               configFn.call(null, $promise);
@@ -50,8 +48,6 @@
       root.$promise = factory(root);
     }
   }
-
-
 
 })(this, function (root) {
 
