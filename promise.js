@@ -28,7 +28,7 @@
 (function (root, factory) {
 
   if ( typeof module !== 'undefined' ) {
-    module.exports = factory();
+    module.exports = factory(root);
   } else {
     if ( root.define ) {
       root.define('$promise', function () { return factory(root); } );
