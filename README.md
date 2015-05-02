@@ -1,4 +1,4 @@
-jEngine: $promise
+jEngine: $promise [![wercker status](https://app.wercker.com/status/ea1a628b907d1613503a54e03df4cadd/s "wercker status")](https://app.wercker.com/project/bykey/ea1a628b907d1613503a54e03df4cadd)
 ================
 [![Bower version](https://badge.fury.io/bo/jstools-promise.svg)](http://badge.fury.io/bo/jstools-promise)
 [![npm version](https://badge.fury.io/js/jstools-promise.svg)](http://badge.fury.io/js/jstools-promise)
