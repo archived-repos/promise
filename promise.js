@@ -37,7 +37,7 @@
     } else if ( root.angular ) {
         var $promise = factory(root);
         angular.module('jstools.promise', [])
-          .provider(function () {
+          .provider('$promise', function () {
             this.config = function (configFn) {
               configFn.call(null, $promise);
             };

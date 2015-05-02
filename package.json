@@ -1,6 +1,6 @@
 {
     "name": "jstools-promise",
-    "version": "0.0.25",
+    "version": "0.0.26",
     "description": "promise jstool implementation",
     "main": "promise.js",
     "repository": {
