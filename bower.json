@@ -1,7 +1,7 @@
 {
     "name": "jstools-promise",
     "main": "promise.js",
-    "version": "0.0.28",
+    "version": "0.0.29",
     "homepage": "https://github.com/jstools/promise",
     "authors": [
         "Jesús Germade <jesus@germade.es>"
