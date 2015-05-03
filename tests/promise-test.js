@@ -226,26 +226,19 @@ describe('promise test', function () {
 			$promise.all([
 				$promise(function (resolve, reject) {
 					setTimeout(function () {
-						resolve('foo');
+						resolve('ok');
 					}, 1);
 				}),
 				$promise(function (resolve, reject) {
 					setTimeout(function () {
-						reject('bar');
+						reject('whoops');
 					}, 1);
 				})
 			])
-				.then(function (results) {
-					console.log('results', results);
-					result = 'ok ' + results.join('.');
-				}).catch(function (reason) {
-					result = 'whoops ' + reason;
+				.catch(function (reason) {
+					expect(reason).toBe('whoops');
+					done();
 				});
-
-			setTimeout(function() {
-				expect(result).toBe('whoops bar');
-				done();
-			}, 10);
     });
 
 		it("rejected all (3)", function(done) {
@@ -261,16 +254,9 @@ describe('promise test', function () {
 				'bar'
 			])
 				.then(function (results) {
-					console.log('results', results);
-					result = 'ok ' + results.join('.');
-				}).catch(function (reason) {
-					result = 'whoops ' + reason;
+					expect( results.join('.') ).toBe('foo.bar');
+					done();
 				});
-
-			setTimeout(function() {
-				expect(result).toBe('ok foo.bar');
-				done();
-			}, 10);
     });
 
 		it("rejected all (3)", function(done) {
@@ -282,16 +268,9 @@ describe('promise test', function () {
 				'bar'
 			])
 				.then(function (results) {
-					console.log('results', results);
-					result = 'ok ' + results.join('.');
-				}).catch(function (reason) {
-					result = 'whoops ' + reason;
+					expect( results.join('.') ).toBe('foo.bar');
+					done();
 				});
-
-			setTimeout(function() {
-				expect(result).toBe('ok foo.bar');
-				done();
-			}, 10);
     });
 
 });
