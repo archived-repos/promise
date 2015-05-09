@@ -15,7 +15,7 @@ bower install jstools-promise --save
 Usage
 -----
 ```.js
-new qPromise(function (resolve, reject) {
+$promise(function (resolve, reject) {
         resolve('gogogo!');
     })
 
