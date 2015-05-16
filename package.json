@@ -1,5 +1,5 @@
 {
-    "name": "jstools-promise",
+    "name": "jengine-promise",
     "version": "0.1.0",
     "description": "promise jstool implementation",
     "main": "promise.js",

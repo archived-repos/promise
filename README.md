@@ -1,16 +1,16 @@
 jEngine: $promise [![wercker status](https://app.wercker.com/status/ea1a628b907d1613503a54e03df4cadd/s "wercker status")](https://app.wercker.com/project/bykey/ea1a628b907d1613503a54e03df4cadd)
 ================
-[![Bower version](https://badge.fury.io/bo/jstools-promise.svg)](http://badge.fury.io/bo/jstools-promise)
-[![npm version](https://badge.fury.io/js/jstools-promise.svg)](http://badge.fury.io/js/jstools-promise)
+[![Bower version](https://badge.fury.io/bo/jengine-promise.svg)](http://badge.fury.io/bo/jengine-promise)
+[![npm version](https://badge.fury.io/js/jengine-promise.svg)](http://badge.fury.io/js/jengine-promise)
 [![Build Status](https://travis-ci.org/jstools/promise.svg?branch=master)](https://travis-ci.org/jstools/promise)
 Installation
 ------------
 ```.sh
-npm install jstools-promise --save
+npm install jengine-promise --save
 ```
   or
 ```.sh
-bower install jstools-promise --save
+bower install jengine-promise --save
 ```
 Usage
 -----
