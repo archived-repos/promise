@@ -1,276 +1,252 @@
 describe('promise test', function () {
 
-	// var $promise = fn('$promise');
+  // var $promise = fn('$promise');
 
-	it("testing resolution", function(done) {
+    it("testing resolution", function(done) {
 
-		var result = false;
+      $promise(function (resolve, reject) {
+        resolve('gogogo!');
+      })
 
-		$promise(function (resolve, reject) {
-			resolve('gogogo!');
-		})
+			.then(function (result) {
+        expect(result).toBe('gogogo!');
+        done();
+			});
 
-		.then(function (value) {
-			result = value;
-		});
-
-		setTimeout(function() {
-
-			expect(result).toBe('gogogo!');
-
-			done();
-		}, 10);
     });
 
     it("reject resolution", function(done) {
 
-		var result = false;
+      $promise(function (resolve, reject) {
+        reject('foobar');
+      })
 
-		$promise(function (resolve, reject) {
-			reject('foobar');
-		})
+      .then(function (value) {
+        return 'ok ' + value;
+      }).catch(function (reason) {
+        throw 'whoops ' + reason;
+      })
 
-		.then(function (value) {
-			result = 'ok ' + value;
-		}).catch(function (reason) {
-			result = 'whoops ' + reason;
-		});
+			.catch(function (reason) {
+        expect(reason).toBe('whoops foobar');
+        done();
+			});
 
-		setTimeout(function() {
-			expect(result).toBe('whoops foobar');
-			done();
-		}, 10);
     });
 
     it("testing interception resolve", function(done) {
 
-		var result = false;
+	    $promise(function (resolve, reject) {
+	      resolve('foobar');
+	    })
 
-		$promise(function (resolve, reject) {
-			resolve('foobar');
-		})
+	    .then(function (value) {
+	      return ':)';
+	    })
 
-		.then(function (value) {
-			return ':)';
-		})
+	    .then(function (value) {
+	      return 'ok ' + value;
+	    }).catch(function (reason) {
+	      throw 'whoops ' + reason;
+	    })
 
-		.then(function (value) {
-			result = 'ok ' + value;
-		}).catch(function (reason) {
-			result = 'whoops ' + reason;
-		});
+			.then(function (result) {
+	      expect(result).toBe('ok :)');
+	      done();
+			});
 
-		setTimeout(function() {
-			expect(result).toBe('ok :)');
-			done();
-		}, 10);
     });
 
     it("testing interception resolve to reject", function(done) {
 
-			var result = false;
+      $promise(function (resolve, reject) {
+        resolve('foobar');
+      })
 
-			$promise(function (resolve, reject) {
-				resolve('foobar');
-			})
+      .then(function (value) {
+        throw 'oO';
+      })
 
-			.then(function (value) {
-				throw 'oO';
-			})
+      .then(function (value) {
+        return 'ok ' + value;
+      }).catch(function (reason) {
+        throw 'whoops ' + reason;
+      })
 
-			.then(function (value) {
-				result = 'ok ' + value;
-			}).catch(function (reason) {
-				result = 'whoops ' + reason;
+			.catch(function (reason) {
+        expect(reason).toBe('whoops oO');
+        done();
 			});
-
-			setTimeout(function() {
-				expect(result).toBe('whoops oO');
-				done();
-			}, 10);
 
     });
 
     it("testing interception reject", function(done) {
 
-			var result = false;
+      $promise(function (resolve, reject) {
+        reject('foobar');
+      })
 
-			$promise(function (resolve, reject) {
-				reject('foobar');
-			})
+      .catch(function (value) {
+        throw 'oO';
+      })
 
-				.catch(function (value) {
-					throw 'oO';
-				})
+      .then(function (value) {
+        return 'ok ' + value;
+      }).catch(function (reason) {
+        throw 'whoops ' + reason;
+      })
 
-				.then(function (value) {
-					result = 'ok ' + value;
-				}).catch(function (reason) {
-					result = 'whoops ' + reason;
-				});
+			.catch(function (reason) {
+        expect(reason).toBe('whoops oO');
+        done();
+			});
 
-				setTimeout(function() {
-					expect(result).toBe('whoops oO');
-					done();
-				}, 10);
     });
 
     it("testing interception reject to resolve", function(done) {
 
-		var result = false;
+			$promise(function (resolve, reject) {
+	      reject('foobar');
+	    })
 
-		$promise(function (resolve, reject) {
-			reject('foobar');
-		})
+	    .catch(function (value) {
+	      return ':)';
+	    })
 
-		.catch(function (value) {
-			return ':)';
-		})
+	    .then(function (value) {
+	      return 'ok ' + value;
+	    }).catch(function (reason) {
+	      throw 'whoops ' + reason;
+	    })
 
-		.then(function (value) {
-			result = 'ok ' + value;
-		}).catch(function (reason) {
-			result = 'whoops ' + reason;
-		});
-
-		setTimeout(function() {
-			expect(result).toBe('ok :)');
-			done();
-		}, 10);
+			.then(function (result) {
+	      expect(result).toBe('ok :)');
+	      done();
+			});
 
     });
 
     it("testing interception resolve returning promise", function(done) {
 
-		var result = false;
+	    $promise(function (resolve, reject) {
+	      reject('foobar');
+	    })
 
-		$promise(function (resolve, reject) {
-			reject('foobar');
-		})
+	    .catch(function (value) {
+	      return $promise(function (resolve, reject) {
+	        resolve(':)');
+	      });
+	    })
 
-		.catch(function (value) {
-			return $promise(function (resolve, reject) {
-				resolve(':)');
+	    .then(function (value) {
+	      return 'ok ' + value;
+	    }).catch(function (reason) {
+	      throw 'whoops ' + reason;
+	    })
+
+			.then(function (result) {
+	      expect(result).toBe('ok :)');
+	      done();
 			});
-		})
-
-		.then(function (value) {
-			result = 'ok ' + value;
-		}).catch(function (reason) {
-			result = 'whoops ' + reason;
-		});
-
-		setTimeout(function() {
-			expect(result).toBe('ok :)');
-			done();
-		}, 10 );
 
     });
 
     it("testing finally", function(done) {
 
-			var result = false;
+      var result = false;
 
-			var promise = $promise(function (resolve, reject) {
-				reject('foobar');
-			})
+      var promise = $promise(function (resolve, reject) {
+        reject('foobar');
+      })
 
-			.finally(function (value) {
-				result = 'finally ' + value;
-			})
+      .finally(function (value) {
+				expect(value).toBe('ok ;)');
+        done();
+      })
 
-				.catch(function (value) {
-					return ';)';
-				})
+        .catch(function (value) {
+          return ';)';
+        })
 
-				.then(function (value) {
-					return 'ok ' + value;
-				})
+        .then(function (value) {
+          return 'ok ' + value;
+        })
 
-			;
-
-			setTimeout(function() {
-				expect(result).toBe('finally ok ;)');
-				done();
-			}, 10);
+      ;
 
     });
 
     it("resolved all", function(done) {
 
-			var result = false;
+      var p = $promise.all([
+        $promise(function (resolve, reject) {
+          setTimeout(function () {
+            resolve('foo');
+          }, 1);
+        }),
+        $promise(function (resolve, reject) {
+          setTimeout(function () {
+            resolve('bar');
+          }, 1);
+        })
+      ])
 
-			var p = $promise.all([
-				$promise(function (resolve, reject) {
-					setTimeout(function () {
-						resolve('foo');
-					}, 1);
-				}),
-				$promise(function (resolve, reject) {
-					setTimeout(function () {
-						resolve('bar');
-					}, 1);
-				})
-			])
-
-			p.then(function (results) {
-					expect(results.join('.')).toBe('foo.bar');
-					done();
-				});
+      p.then(function (results) {
+          expect(results.join('.')).toBe('foo.bar');
+          done();
+        });
     });
 
     it("rejected all (2)", function(done) {
 
-			var result = false;
-
-			$promise.all([
-				$promise(function (resolve, reject) {
-					setTimeout(function () {
-						resolve('ok');
-					}, 1);
-				}),
-				$promise(function (resolve, reject) {
-					setTimeout(function () {
-						reject('whoops');
-					}, 1);
-				})
-			])
-				.catch(function (reason) {
-					expect(reason).toBe('whoops');
-					done();
-				});
+      $promise.all([
+        $promise(function (resolve, reject) {
+          setTimeout(function () {
+            resolve('ok');
+          }, 1);
+        }),
+        $promise(function (resolve, reject) {
+          setTimeout(function () {
+            reject('whoops');
+          }, 1);
+        })
+      ])
+        .catch(function (reason) {
+          expect(reason).toBe('whoops');
+          done();
+        });
     });
 
-		it("rejected all (3)", function(done) {
+    it("rejected all (3)", function(done) {
 
-			var result = false;
+      var result = false;
 
-			$promise.all([
-				$promise(function (resolve, reject) {
-					setTimeout(function () {
-						resolve('foo');
-					}, 1);
-				}),
-				'bar'
-			])
-				.then(function (results) {
-					expect( results.join('.') ).toBe('foo.bar');
-					done();
-				});
+      $promise.all([
+        $promise(function (resolve, reject) {
+          setTimeout(function () {
+            resolve('foo');
+          }, 1);
+        }),
+        'bar'
+      ])
+        .then(function (results) {
+          expect( results.join('.') ).toBe('foo.bar');
+          done();
+        });
     });
 
-		it("rejected all (3)", function(done) {
+    it("rejected all (3)", function(done) {
 
-			var result = false;
+      var result = false;
 
-			$promise.all([
-				'foo',
-				'bar'
-			])
-				.then(function (results) {
-					expect( results.join('.') ).toBe('foo.bar');
-					done();
-				});
+      $promise.all([
+        'foo',
+        'bar'
+      ])
+        .then(function (results) {
+          expect( results.join('.') ).toBe('foo.bar');
+          done();
+        });
     });
 
 });
