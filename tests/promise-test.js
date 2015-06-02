@@ -249,4 +249,82 @@ describe('promise test', function () {
         });
     });
 
+    it("then promise resolve", function(done) {
+
+      var result = false;
+
+      $promise(function (resolve, reject) {
+        resolve('gogogo!');
+      })
+
+        .then(function (result) {
+          return $promise.resolve(result);
+        })
+
+        .then(function (result) {
+          expect(result).toBe('gogogo!');
+          done();
+        });
+
+    });
+
+    it("then promise reject", function(done) {
+
+      var result = false;
+
+      $promise(function (resolve, reject) {
+        resolve('gogogo!');
+      })
+
+        .then(function (result) {
+          return $promise.reject('whoops!');
+        })
+
+        .catch(function (result) {
+          expect(result).toBe('whoops!');
+          done();
+        });
+
+    });
+
+    it("then when resolve", function(done) {
+
+      var result = false;
+
+      $promise(function (resolve, reject) {
+        resolve('gogogo!');
+      })
+
+        .then(function (result) {
+          return $promise.when(result);
+        })
+
+        .then(function (result) {
+          expect(result).toBe('gogogo!');
+          done();
+        });
+
+    });
+
+    it("then when reject", function(done) {
+
+      var result = false;
+
+      $promise(function (resolve, reject) {
+        resolve('gogogo!');
+      })
+
+        .then(function (result) {
+          return $promise.when(result).then(function () {
+            throw 'whoops!';
+          })
+        })
+
+        .catch(function (result) {
+          expect(result).toBe('whoops!');
+          done();
+        });
+
+    });
+
 });

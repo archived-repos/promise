@@ -92,8 +92,8 @@
 			if( value !== undefined ) {
 				promise['[[PromiseValue]]'] = value;
 			}
-		} else if( promise['[[PromiseStatus]]'] === 'rejected' ) {
-			throw new Error('unhandled promise');
+		// } else if( promise['[[PromiseStatus]]'] === 'rejected' ) {
+		// 	throw new Error('unhandled promise');
 		} else {
 			step = promise.queue.finally.shift();
 
@@ -130,10 +130,10 @@
 
 				switch ( promise['[[PromiseStatus]]'] ) {
 					case 'fulfilled':
-						promise.resolve( ( newValue === undefined ) ? value : newValue );
+						promise.resolve( newValue === undefined ? value : newValue );
 						break;
 					case 'rejected':
-						promise.reject( ( newValue === undefined ) ? value : newValue );
+						promise.reject( newValue === undefined ? value : newValue );
 						break;
 				}
 			}
@@ -191,9 +191,21 @@
 		return processResult(this, 'fulfilled', value);
 	};
 
-	P.prototype.reject = function (value) {
-		return processResult(this, 'rejected', value);
+	P.prototype.reject = function (reason) {
+		return processResult(this, 'rejected', reason);
 	};
+
+  P.resolve = function (value) {
+    return P(function (resolve, reject) {
+      resolve(value);
+    });
+  };
+
+  P.reject = function (reason) {
+    return P(function (resolve, reject) {
+      reject(reason);
+    });
+  };
 
 	P.defer = function () {
 		var deferred = new P();
@@ -202,14 +214,13 @@
 	};
 
 	P.when = function (promise) {
-		var whenPromise = new P(function (resolve, reject) {
+		return P(function (resolve, reject) {
 			if( promise && promise.then ) {
 				promise.then(resolve, reject);
 			} else {
-				resolve(whenPromise, promise);
+				resolve(promise);
 			}
 		});
-		return whenPromise;
 	};
 
 	P.all = function (promisesList) {

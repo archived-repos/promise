@@ -1,6 +1,6 @@
 {
   "name": "jengine-promise",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "promise jstool implementation",
   "main": "promise.js",
   "repository": {
@@ -34,6 +34,7 @@
     "time-grunt": "latest"
   },
   "scripts": {
+    "pretest": "npm install",
     "test": "grunt test",
     "posttest": "grunt uglify:min"
   }
