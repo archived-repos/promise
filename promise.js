@@ -1,5 +1,5 @@
 /*
- * css.js
+ * promise.js
  *
  * The MIT License (MIT)
  *
