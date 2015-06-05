@@ -1,7 +1,7 @@
 {
   "name": "jengine-promise",
   "main": "promise.js",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "homepage": "https://github.com/jstools/promise",
   "authors": [
       "Jesús Germade <jesus@germade.es>"

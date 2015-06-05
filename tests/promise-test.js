@@ -1,4 +1,4 @@
-describe('promise test', function () {
+describe('promise resolution', function () {
 
   // var $promise = fn('$promise');
 
@@ -33,6 +33,10 @@ describe('promise test', function () {
 			});
 
     });
+
+});
+
+describe('promise interception', function () {
 
     it("testing interception resolve", function(done) {
 
@@ -151,6 +155,10 @@ describe('promise test', function () {
 
     });
 
+});
+
+describe('promise finally', function () {
+
     it("testing finally", function(done) {
 
       var result = false;
@@ -176,7 +184,11 @@ describe('promise test', function () {
 
     });
 
-    it("resolved all", function(done) {
+});
+
+describe('promise all', function () {
+
+    it("list resolved", function(done) {
 
       var p = $promise.all([
         $promise(function (resolve, reject) {
@@ -197,7 +209,7 @@ describe('promise test', function () {
         });
     });
 
-    it("rejected all (2)", function(done) {
+    it("list rejected", function(done) {
 
       $promise.all([
         $promise(function (resolve, reject) {
@@ -217,7 +229,7 @@ describe('promise test', function () {
         });
     });
 
-    it("rejected all (3)", function(done) {
+    it("list mixed", function(done) {
 
       var result = false;
 
@@ -235,7 +247,7 @@ describe('promise test', function () {
         });
     });
 
-    it("rejected all (3)", function(done) {
+    it("list values", function(done) {
 
       var result = false;
 
@@ -249,7 +261,11 @@ describe('promise test', function () {
         });
     });
 
-    it("then promise resolve", function(done) {
+});
+
+describe('promise then', function () {
+
+    it("resolve", function(done) {
 
       var result = false;
 
@@ -268,7 +284,7 @@ describe('promise test', function () {
 
     });
 
-    it("then promise reject", function(done) {
+    it("reject", function(done) {
 
       var result = false;
 
@@ -287,7 +303,7 @@ describe('promise test', function () {
 
     });
 
-    it("then when resolve", function(done) {
+    it("when resolve", function(done) {
 
       var result = false;
 
@@ -306,7 +322,7 @@ describe('promise test', function () {
 
     });
 
-    it("then when reject", function(done) {
+    it("when reject", function(done) {
 
       var result = false;
 
@@ -318,6 +334,44 @@ describe('promise test', function () {
           return $promise.when(result).then(function () {
             throw 'whoops!';
           })
+        })
+
+        .catch(function (result) {
+          expect(result).toBe('whoops!');
+          done();
+        });
+
+    });
+
+    it("$promise.resolve", function(done) {
+
+      var result = false;
+
+      $promise(function (resolve, reject) {
+        resolve('gogogo!');
+      })
+
+        .then(function (result) {
+          return $promise.resolve(result);
+        })
+
+        .then(function (result) {
+          expect(result).toBe('gogogo!');
+          done();
+        });
+
+    });
+
+    it("$promise.reject", function(done) {
+
+      var result = false;
+
+      $promise(function (resolve, reject) {
+        resolve('gogogo!');
+      })
+
+        .then(function (result) {
+          return $promise.reject('whoops!');
         })
 
         .catch(function (result) {
